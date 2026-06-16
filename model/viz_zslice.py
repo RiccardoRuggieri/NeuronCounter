@@ -15,8 +15,8 @@ PNGs) -- no server, opens in any browser, shareable like ``neurons_3d.html``.
 
 CLI
 ---
-    python -m neuron_counter.viz_zslice sample.czi --results results
-    python -m neuron_counter.viz_zslice sample.czi -o results/zviewer.html
+    python -m model.viz_zslice sample.czi --results results
+    python -m model.viz_zslice sample.czi -o results/zviewer.html
 """
 from __future__ import annotations
 
@@ -762,7 +762,7 @@ def generate_viewer(input_path: str, results_dir: str = "results",
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(
-        prog="neuron_counter.viz_zslice",
+        prog="model.viz_zslice",
         description="Build a standalone HTML z-slice viewer that smoothly "
                     "interpolates between z-planes (ZEN/Fiji-style), with an "
                     "optional overlay of detected neuron centroids.",

@@ -3,7 +3,7 @@ app
 ===
 A minimal desktop launcher for non-technical operators:
 
-    1. Launch (double-click a launcher, or `python -m neuron_counter.app`).
+    1. Launch (double-click a launcher, or `python -m model.app`).
     2. "Select image…"  -> pick a .czi file.
        The counter runs and the interactive viewer opens in the browser.
     3. Review; add / remove neurons by eye; click "✓ Accept & save count".

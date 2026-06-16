@@ -1,21 +1,21 @@
 """
 Command-line entry point.
 
-    python -m neuron_counter INPUT.czi [options]
+    python -m model INPUT.czi [options]
 
 Examples
 --------
     # Count with defaults (KDE mode-counting):
-    python -m neuron_counter sample.czi
+    python -m model sample.czi
 
     # The main accuracy knob is the bandwidth (~soma radius, microns):
-    python -m neuron_counter sample.czi --bandwidth-um 2.5
+    python -m model sample.czi --bandwidth-um 2.5
 
     # Trade accuracy for speed (fewer sampled points):
-    python -m neuron_counter sample.czi --max-points 12000
+    python -m model sample.czi --max-points 12000
 
     # Just print file metadata and exit:
-    python -m neuron_counter sample.czi --info
+    python -m model sample.czi --info
 """
 from __future__ import annotations
 
@@ -61,7 +61,7 @@ def _load_config(path: str | None) -> dict:
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(
-        prog="neuron_counter",
+        prog="model",
         description="Count HuC/D+ neurons in a 3D .czi z-stack by fitting a "
                     "non-parametric Gaussian mixture in 3D and counting its "
                     "density modes.",

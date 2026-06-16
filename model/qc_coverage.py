@@ -32,7 +32,7 @@ plus an error envelope, not a single trusted accuracy number.
 
 CLI
 ---
-    python -m neuron_counter.qc_coverage sample.czi --results results
+    python -m model.qc_coverage sample.czi --results results
 """
 from __future__ import annotations
 
@@ -296,7 +296,7 @@ def _read_centroids(results_dir: Path) -> Tuple[np.ndarray, Optional[float]]:
     csv = results_dir / "neurons.csv"
     if not csv.exists():
         raise FileNotFoundError(
-            f"{csv} not found -- run `python -m neuron_counter <file.czi>` first."
+            f"{csv} not found -- run `python -m model <file.czi>` first."
         )
     df = pd.read_csv(csv)
     cols = ["centroid_z", "centroid_y", "centroid_x"]
@@ -388,7 +388,7 @@ def run_audit(czi_path: str, results_dir: str, cfg: dict,
 # --------------------------------------------------------------------------- #
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(
-        prog="neuron_counter.qc_coverage",
+        prog="model.qc_coverage",
         description="Label-free a-posteriori audit: find bright HuC/D blobs that "
                     "carry no digital annotation (candidate misses) and "
                     "annotations on empty regions (candidate false positives).",

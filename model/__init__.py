@@ -1,5 +1,5 @@
 """
-neuron_counter
+model
 ==============
 Count neurons (HuC/D+ cell bodies) in 3D confocal z-stacks stored as Carl
 Zeiss ``.czi`` files.
