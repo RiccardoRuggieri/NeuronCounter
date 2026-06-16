@@ -1,0 +1,93 @@
+# ===========================================================================
+# Configuration for the neuron counter (non-parametric GMM mode-counting).
+#
+# Pipeline:  CZI -> intensity-weighted 3D point cloud -> 3D Gaussian-mixture
+#            density -> count the modes (local maxima) of that density.
+# All values can be overridden on the command line (see --help).
+# ===========================================================================
+
+random_state: 0
+
+# ---- Channel selection -----------------------------------------------------
+channels:
+  neuron_marker_index: 0          # ch0 = HuC/D (pan-neuronal somata)
+  names: ["HuC_D", "Ch1", "Ch2", "Ch3"]
+
+# ---- Voxel size (microns). Auto-read from CZI metadata; these are fallbacks.-
+voxel_um:
+  x: 0.6905
+  y: 0.6905
+  z: 1.0
+
+# ---- Foreground -> point cloud --------------------------------------------
+# Bright voxels become points placed in physical micron space (so the 3D
+# Gaussians are isotropic-metric) and are sub-sampled for speed; brighter
+# voxels are sampled more often (intensity weighting).
+foreground:
+  smooth_sigma_um: 1.0            # gaussian denoise (microns); 0 disables
+  threshold_method: "otsu"        # otsu | percentile | triangle | absolute
+  threshold_percentile: 98.0      # used when method == percentile
+  threshold_absolute: 0.0         # used when method == absolute
+  min_foreground_frac: 0.0005     # safety floor on fraction of voxels kept
+  max_points: 20000               # sub-sample target (lower = faster)
+  weight_by_intensity: true       # sample points proportional to intensity
+
+# ---- Gaussian KDE density --------------------------------------------------
+# The point cloud is modelled as a Gaussian kernel-density estimate (one
+# isotropic Gaussian of bandwidth `h` per point) and neurons are the modes of
+# that density. The bandwidth is the single most important knob: it is ~the soma
+# RADIUS and sets how close two cells must be before they merge into one mode.
+gmm:
+  bandwidth_um: 4.0               # larger -> fewer modes (counts merge)
+  # ^ calibrated so measured soma diameters match the expected 15-25 um here.
+  seed_min_distance_um: 8.0       # min separation of seed maxima (~soma spacing)
+  seed_threshold_rel: 0.0         # extra relative floor above the foreground threshold
+
+# ---- Mode counting ---------------------------------------------------------
+modes:
+  merge_radius_um: null           # null -> 0.5 * bandwidth
+  meanshift_max_iter: 150
+  tol_um: 0.02                    # mean-shift convergence tolerance
+  min_mode_density_rel: 0.0       # drop modes dimmer than this * median density
+
+# ---- Soma size filter ------------------------------------------------------
+# Each mode's size is the in-plane (XY) equivalent diameter of the foreground
+# it owns. The stack is only ~6 um deep, so a 15-25 um soma is truncated in z;
+# size is therefore judged in-plane. Objects outside the range are excluded.
+size:
+  min_diameter_um: 8.0            # exclude objects smaller than this
+  max_diameter_um: 35.0           # exclude objects larger than this
+  size_assign_cap_um: null        # null -> max_diameter_um (max voxel->mode distance)
+
+# ---- Robust counting (ensemble bootstrap / stability selection) -----------
+# Instead of one fragile run, the detection is rebuilt end-to-end many times
+# from a PERTURBED copy of the image, so the count spread reflects the real
+# sources of uncertainty rather than one hand-picked knob:
+#   * a fresh measurement-noise realization (scale estimated from the image),
+#     re-thresholded and re-seeded  -> acquisition uncertainty;
+#   * the foreground threshold jittered (Otsu is not exact)  -> seeds/foreground;
+#   * the KDE bandwidth jittered (a modelling choice ~ soma radius).
+# A neuron is kept only if re-detected in >= `selection_threshold` of the runs.
+# The reported per-run mean/std and 2.5-97.5 percentile band are a bootstrap
+# over these sources; each neuron also carries a stability (re-detection) score.
+robust:
+  enabled: true
+  n_runs: 25                      # ensemble size (more = tighter estimate, slower)
+  noise_model: "gaussian"         # gaussian | poisson | none (per-run noise realization)
+  noise_scale: 1.0                # inject this * the image's estimated noise floor
+  threshold_jitter: 0.08          # vary the foreground threshold +/- this fraction
+  bandwidth_jitter: 0.15          # vary bandwidth by +/- this fraction each run
+  consensus_radius_um: 4.0        # match detections across runs (< soma spacing)
+  selection_threshold: 0.5        # keep neurons re-detected in >= this fraction
+
+# ---- Output ----------------------------------------------------------------
+# Only the z-slice viewer (zviewer.html) and the data it needs are produced by
+# default. The static PNGs and the 3D viewer are off; flip them on if wanted.
+output:
+  dir: "results"
+  save_metrics_csv: true          # per-neuron centroid table (neurons.csv) -> feeds the viewer
+  save_overlays: false            # MIP overlay + per-z montage PNGs
+  save_html_3d: false             # interactive 3D viewer (neurons_3d.html, needs plotly)
+  save_coverage_audit: true       # label-free QC -> qc_candidate_misses.csv (amber rings)
+  save_coverage_png: false        # qc_coverage.png static audit image
+  save_zviewer: true              # standalone z-slice viewer (zviewer.html)
