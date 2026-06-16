@@ -26,7 +26,7 @@ import numpy as np
 
 # Reuse the package's robust CZI loader (numpy-only import).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from model.io_czi import load_czi
+from neuron_counter.io_czi import load_czi
 
 
 def _stretch(plane: np.ndarray, p_lo=1.0, p_hi=99.5) -> np.ndarray:

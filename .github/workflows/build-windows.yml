@@ -31,7 +31,7 @@ jobs:
           pip install pyinstaller
 
       - name: Build NeuronCounter.exe
-        run: pyinstaller model.spec --clean --noconfirm
+        run: pyinstaller neuron_counter.spec --clean --noconfirm
 
       - name: Upload exe as artifact
         uses: actions/upload-artifact@v4

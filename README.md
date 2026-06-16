@@ -108,16 +108,16 @@ The GUI needs Python's Tkinter (bundled with python.org builds; on Debian/Ubuntu
 
 ```bash
 # Count with defaults:
-python -m model sample.czi
+python -m neuron_counter sample.czi
 
 # The one knob that matters — bandwidth (~soma radius, microns):
-python -m model sample.czi --bandwidth-um 8   # larger -> fewer, merged cells
+python -m neuron_counter sample.czi --bandwidth-um 8   # larger -> fewer, merged cells
 
 # Single fast pass without the ensemble:
-python -m model sample.czi --no-robust
+python -m neuron_counter sample.czi --no-robust
 
 # Inspect channels / voxel size and exit:
-python -m model sample.czi --info
+python -m neuron_counter sample.czi --info
 ```
 
 ## Outputs (in `results/` by default)
