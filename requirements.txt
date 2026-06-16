@@ -1,0 +1,14 @@
+# Core
+numpy>=1.23
+scipy>=1.9
+scikit-image>=0.20      # foreground threshold + local-maxima seeding
+pandas>=1.5
+pyyaml>=6.0
+matplotlib>=3.6
+plotly>=5.0             # interactive 3D QC viewer (results/neurons_3d.html)
+
+# CZI reading. czifile is pure-python (no compiler needed); aicspylibczi is a
+# faster C-backed reader and is used automatically if it is installed.
+czifile>=2019.7.2
+imagecodecs>=2023.1.23  # decodes compressed CZI segments (Zstd/JpegXR); has Windows wheels
+# aicspylibczi>=3.1.1   # optional, faster reader (needs a C/C++ toolchain)
